@@ -11,10 +11,14 @@ f0 = 10^9;                       % resonant frequency 1GHz
 BW = 10^8;                       % f2-f1
 
 %% Gradient Descent Algorithm Parameters %%
-mu  = 0.001*ones(f_length,1);
-mu(90:110)  = 0.0001*ones(21,1);
+len_singularity = f_length/10;
+low_singularity = f_length/2-len_singularity/2+1;
+higher_singular = f_length/2+len_singularity/2;
+
+mu  = 0.01*ones(f_length,1);
+mu(low_singularity:higher_singular) = 0.0001*ones(len_singularity,1);
 No_of_iterations = 10000*ones(f_length,1);
-No_of_iterations(90:110) = 10*ones(21,1);
+No_of_iterations(low_singularity:higher_singular) = 10*ones(len_singularity,1);
 %% g values
 g1=1.5963;                       
 g2=1.0967;
@@ -74,6 +78,7 @@ hold on
 p1 = plot(f,S11_inf_g,'r-o');
 p.LineWidth = 2;
 p3 = plot(f,S11_inf_opt,'b:p');
+p3.LineWidth = 1.25;
 hold on
 %% For Qu = 1000
 
@@ -104,5 +109,6 @@ hold on
 q1 = plot(f,S11_Qu_g,'k-*');
 q1.LineWidth = 2;
 q3 = plot(f,S11_Qu_opt,'g:<');
-legend('S11 : Using Aggregate Estimate [Qu=inf]','S11 : Frequency specific Estimate [Qu=inf]','S11 : Using Aggregate Estimate [Qu=1000]','S11 : Frequency specific Estimate [Qu=1000]');
+q3.LineWidth = 1.25;
+legend(['S11 : Using Aggregate Estimate [Qu=' num2str(QuV(1)) ']'],['S11 : Frequency specific Estimate [Qu' num2str(QuV(1)) ']'],['S11 : Using Aggregate Estimate [Qu=' num2str(QuV(2)) ']'],['S11 : Frequency specific Estimate [Qu=' num2str(QuV(1)) ']']);
 
