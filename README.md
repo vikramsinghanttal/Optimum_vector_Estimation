@@ -1,2 +1,2 @@
 # Optimum_vector_Estimation
-Matlab version R2017b (minimum)
+Matlab version required : R2017b (minimum)
