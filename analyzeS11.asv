@@ -1,0 +1,56 @@
+clear all;
+clc;
+%Analyze S11
+Qu = inf;
+n=3;
+N = 1000;
+g11=-2+4*rand(N,1);                       
+g21=-2+4*rand(N,1);  
+g31=-2+4*rand(N,1); 
+S11_inf_g=zeros(N,1);
+% f = linspace(0.5e9,1.5e9,2000);  % range of frequency 0.5GHz to 1.5GHz
+f=1.5e9;
+f_length =  length(f);           % Length of Frequency vector
+f0 = 10^9;                       % resonant frequency 1GHz
+BW = 10^8;                       % f2-f1
+
+R= [1 0 0 0 0;
+    0 0 0 0 0;
+    0 0 0 0 0;
+    0 0 0 0 0;
+    0 0 0 0 1];
+I=eye(n+2);
+I(1,1)=0;
+I(n+2,n+2)=0;
+
+for fop=1:f_length
+    fi = f(fop);
+    g3=g31;
+    for i=1:N
+            g1=g11(i);
+            g2=g21(i);
+            g3=g31(i);
+            lambda= (f0/BW)*((1/Qu)+(fi/f0)-(f0/fi));
+            M=  ret_M(1/sqrt(g1),1/sqrt(g1*g2),1/sqrt(g3));       
+            A= lambda*I - 1i*R + M;   
+
+            inv_A = inv(A);
+            S11_inf_g(i)= 20*log10(abs(1+2*1i*inv_A(1,1)));
+    end
+end
+%vectorization for optimum g
+min_s11 = min(S11_inf_g);
+max_s11 = min(S11_inf_g);
+del_inc = (max_s11-min_s11)/8;
+low_lim = min_s11;
+hi_lim  = min_s11+del_inc;
+color = ['red','green','blue','cyan','magenta','yellow','black','white'];
+figure
+hold on
+for ii = 1:8 
+    indx = find((S11_inf_g>low_lim)&&(S11_inf_g<hi_lim));
+p=scatter3(g11(indx),g21(indx),g31(find((S11_inf_g>low_lim)&&(S11_inf_g<hi_lim))));
+p.MarkerFaceColor = color(ii);
+low_lim = hi_lim;
+hi_lim  = low_lim+del_inc;
+end
